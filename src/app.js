@@ -11,9 +11,29 @@ let data = {
     age: 30,
     city: "New York"
 };
-app.get("/user",(req, res) => {
+
+// Route Query
+app.get("/users",(req, res) => {
+    console.log(req.query);
     res.send(data);
 })
+
+// Dynamic route
+app.get("/user/:id",(req, res) => {
+    console.log(req.params);
+    res.send(data);
+})
+
+// Optional route name
+// app.get("/ab?c",(req, res) => {
+//     res.send(data);
+// });
+// app.get("/ab+c",(req, res) => {
+//     res.send(data);
+// })
+// app.get("/a/",(req, res) => {
+//     res.send("Its a regex route");
+// })
 
 app.post("/user",(req, res) => {
    // Saving data to DB
