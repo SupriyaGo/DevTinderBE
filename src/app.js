@@ -5,13 +5,19 @@ const connectDB = require("./config/database");
 const User = require("./models/user");
 const app = express();
 
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
+	console.log("Request body:", req.body);
+
+	const body = req.body;
+	
 	const userObj = {
-		firstName: "Aditi",
-		lastName: "Chakraborty",
-		email: "aditi@mail.com",
-		age: 30,
-		gender: "male",
+		firstName: body.firstName,
+		lastName: body.lastName,
+		email: body.email,
+		age: body.age,
+		gender: body.gender,
 	};
 	const user = new User(userObj);
 	try {
