@@ -29,6 +29,16 @@ app.post("/signup", async (req, res) => {
 	}
 });
 
+// Get user by email
+
+// Feed API - GET /feed get all the users
+
+// Delete a user
+
+// Update a user
+
+// Update user by email
+
 connectDB()
 	.then(() => {
 		console.log("Database connected successfully");
