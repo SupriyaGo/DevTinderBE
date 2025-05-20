@@ -11,7 +11,7 @@ app.post("/signup", async (req, res) => {
 	console.log("Request body:", req.body);
 
 	const body = req.body;
-	
+
 	const userObj = {
 		firstName: body.firstName,
 		lastName: body.lastName,
@@ -30,6 +30,21 @@ app.post("/signup", async (req, res) => {
 });
 
 // Get user by email
+app.get("/user", async (req, res) => {
+	try {
+		const email = req.body.email;
+		const result = await User.find({ email });
+
+		if (result.length === 0) {
+			res.status(400).send("Email not found");
+		} else {
+			res.send(result);
+		}
+	} catch (error) {
+		console.error("Error getting user", error);
+		res.status(400).send("Error getting user: " + error.message);
+	}
+});
 
 // Feed API - GET /feed get all the users
 
