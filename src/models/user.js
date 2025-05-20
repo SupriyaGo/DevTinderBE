@@ -1,6 +1,7 @@
 /** @format */
 
 const mongoose = require("mongoose");
+const validator = require("validator");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -25,12 +26,11 @@ const userSchema = new Schema({
 		maxLength: 50,
 		unique: true,
 		lowercase: true,
-		validate: {
-			validator: function (v) {
-				return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v);
-			},
-			message: (props) => `${props.value} is not a valid email!`,
-		},
+		validate(value) {
+			if (!validator.isEmail(value)) {
+				throw new Error(`${value} is not a valid email!`);
+			}
+		}
 	},
 	password: {
 		type: String,
@@ -38,13 +38,11 @@ const userSchema = new Schema({
 		trim: true,
 		minLength: 2,
 		maxLength: 8,
-		validate: {
-			validator: function (v) {
-				return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*]{2,8}$/.test(v); //should contain at least one uppercase letter, one lowercase letter, and one number and special characters
-			},
-			message: (props) =>
-				`${props.value} is not a valid password! Password must be 2-8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.`,
-		},
+		validate(value) {
+			if (!validator.isStrongPassword(value)) {
+				throw new Error(`Not a valid PASSWORD!`);
+			}
+		}
 	},
 	age: {
 		type: Number,
@@ -64,6 +62,11 @@ const userSchema = new Schema({
 		type: String,
 		trim: true,
 		default: "https://png.pngtree.com/png-vector/20210604/ourmid/pngtree-gray-avatar-placeholder-png-image_3416697.jpg",
+		validate(value) {
+			if (!validator.isURL(value)) {
+				throw new Error(`${value} is not a valid URL!`);
+			}
+		}
 	},
 	skills: {
 		type: [String]

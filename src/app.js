@@ -26,7 +26,7 @@ app.post("/signup", async (req, res) => {
 		if(!isSignUpAllowed) {
 			throw new Error("Invalid fields");
 		}
-		if(body.skills.length > 25) {
+		if(body.skills?.length > 25) {
 			throw new Error("Skills should be less than 25");
 		}
 		const user = new User(body);
