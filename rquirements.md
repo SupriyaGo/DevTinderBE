@@ -20,11 +20,15 @@ LLD
 # DB Design
     ## Collections (Single responsibility principle)
         - User
-            _ Firstname
-            _ lastname
+            _ Firstname 
+            _ Lastname
             _ Email
             _ Password
             _ Age
+            _ Gender
+            _ Photo
+            _ Skills
+            _ About
         - ConnectionRequest
             _ fromUserId
             _ toUserId

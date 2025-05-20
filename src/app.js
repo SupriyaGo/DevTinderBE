@@ -16,10 +16,9 @@ app.post("/signup", async (req, res) => {
 		firstName: body.firstName,
 		lastName: body.lastName,
 		email: body.email,
-		age: body.age,
 		gender: body.gender,
 	};
-	const user = new User(userObj);
+	const user = new User(body);
 	try {
 		await user.save();
 		res.send("User created successfully!!");
@@ -87,8 +86,9 @@ app.patch("/user", async (req, res) => {
 			lastName: req.body.lastName,
 			email: req.body.email,
 		};
-		const result = await User.findByIdAndUpdate({ _id: id }, data, {
+		const result = await User.findByIdAndUpdate({ _id: id }, req.body, {
 			returnDocument: "after",
+			runValidators: true,
 		});
 
 		if (!result) {
