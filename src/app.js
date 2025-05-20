@@ -8,18 +8,28 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-	console.log("Request body:", req.body);
-
 	const body = req.body;
-
-	const userObj = {
-		firstName: body.firstName,
-		lastName: body.lastName,
-		email: body.email,
-		gender: body.gender,
-	};
-	const user = new User(body);
+	
 	try {
+		const ALLOWED_FIELDS = [
+			"firstName",
+			"lastName",
+			"email",
+			"password",
+			"age",
+			"gender",
+			"photo",
+			"skills",
+			"about"
+		]
+		const isSignUpAllowed =  Object.keys(body).every((key) => ALLOWED_FIELDS.includes(key))
+		if(!isSignUpAllowed) {
+			throw new Error("Invalid fields");
+		}
+		if(body.skills.length > 25) {
+			throw new Error("Skills should be less than 25");
+		}
+		const user = new User(body);
 		await user.save();
 		res.send("User created successfully!!");
 	} catch (error) {
@@ -79,14 +89,27 @@ app.delete("/user", async (req, res) => {
 });
 
 // Update a user
-app.patch("/user", async (req, res) => {
+app.patch("/user/:id", async (req, res) => {
+	const id = req.params.id;
+	const body = req.body;
 	try {
-		const id = req.body.id;
-		const data = {
-			lastName: req.body.lastName,
-			email: req.body.email,
-		};
-		const result = await User.findByIdAndUpdate({ _id: id }, req.body, {
+		const ALLOWED_FIELDS = [
+			"firstName",
+			"lastName",
+			"password",
+			"photo",
+			"skills",
+			"about"
+		]
+		const isUpdateAllowed =  Object.keys(body).every((key) => ALLOWED_FIELDS.includes(key))
+		if(!isUpdateAllowed) {
+			throw new Error("Update not allowed");
+		}
+		if(body.skills?.length > 25) {
+			throw new Error("Skills should be less than 25");
+		}
+		
+		const result = await User.findByIdAndUpdate({ _id: id }, body, {
 			returnDocument: "after",
 			runValidators: true,
 		});
@@ -103,15 +126,28 @@ app.patch("/user", async (req, res) => {
 });
 
 // Update user by email
-app.patch("/userByEmail", async (req, res) => {
+app.patch("/userByEmail/:email", async (req, res) => {
+	const body = req.body;
+	const email = req.params.email;
 	try {
-		const email = req.body.email;
-		const data = {
-			lastName: req.body.lastName,
-			email: req.body.newEmail,
-		};
-		const result = await User.findOneAndUpdate({ email }, data, {
+		const ALLOWED_FIELDS = [
+			"firstName",
+			"lastName",
+			"password",
+			"photo",
+			"skills",
+			"about"
+		]
+		const isUpdateAllowed =  Object.keys(body).every((key) => ALLOWED_FIELDS.includes(key))
+		if(!isUpdateAllowed) {
+			throw new Error("Update not allowed");
+		}
+		if(body.skills?.length > 25) {
+			throw new Error("Skills should be less than 25");
+		}
+		const result = await User.findOneAndUpdate({ email }, body, {
 			returnDocument: "after",
+			runValidators: true,
 		});
 
 		if (!result) {
