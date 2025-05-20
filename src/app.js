@@ -67,7 +67,6 @@ app.delete("/user", async (req, res) => {
 	try {
 		const id = req.body.id;
 		const result = await User.findByIdAndDelete(id);
-		console.log("====result", result);
 
 		if (!result) {
 			res.status(400).send("User not found");
@@ -81,8 +80,50 @@ app.delete("/user", async (req, res) => {
 });
 
 // Update a user
+app.patch("/user", async (req, res) => {
+	try {
+		const id = req.body.id;
+		const data = {
+			lastName: req.body.lastName,
+			email: req.body.email,
+		};
+		const result = await User.findByIdAndUpdate({ _id: id }, data, {
+			returnDocument: "after",
+		});
+
+		if (!result) {
+			res.status(400).send("User not found");
+		} else {
+			res.send("User updated successfully: " + result);
+		}
+	} catch (error) {
+		console.error("Error updating user", error);
+		res.status(400).send("Error updating user: " + error.message);
+	}
+});
 
 // Update user by email
+app.patch("/userByEmail", async (req, res) => {
+	try {
+		const email = req.body.email;
+		const data = {
+			lastName: req.body.lastName,
+			email: req.body.newEmail,
+		};
+		const result = await User.findOneAndUpdate({ email }, data, {
+			returnDocument: "after",
+		});
+
+		if (!result) {
+			res.status(400).send("User not found");
+		} else {
+			res.send("User updated successfully: " + result);
+		}
+	} catch (error) {
+		console.error("Error updating user", error);
+		res.status(400).send("Error updating user: " + error.message);
+	}
+});
 
 connectDB()
 	.then(() => {
