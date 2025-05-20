@@ -63,6 +63,22 @@ app.get("/feed", async (req, res) => {
 });
 
 // Delete a user
+app.delete("/user", async (req, res) => {
+	try {
+		const id = req.body.id;
+		const result = await User.findByIdAndDelete(id);
+		console.log("====result", result);
+
+		if (!result) {
+			res.status(400).send("User not found");
+		} else {
+			res.send("User deleted successfully: " + result);
+		}
+	} catch (error) {
+		console.error("Error deleting user", error);
+		res.status(400).send("Error deleting user: " + error.message);
+	}
+});
 
 // Update a user
 
