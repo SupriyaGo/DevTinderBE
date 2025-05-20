@@ -47,6 +47,20 @@ app.get("/user", async (req, res) => {
 });
 
 // Feed API - GET /feed get all the users
+app.get("/feed", async (req, res) => {
+	try {
+		const result = await User.find({});
+
+		if (result.length === 0) {
+			res.status(400).send("No user found");
+		} else {
+			res.send(result);
+		}
+	} catch (error) {
+		console.error("Error getting users", error);
+		res.status(400).send("Error getting users: " + error.message);
+	}
+});
 
 // Delete a user
 
