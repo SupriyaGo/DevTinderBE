@@ -1,16 +1,27 @@
 /** @format */
 
 const express = require("express");
+const app = express();
+const bcrypt = require("bcrypt");
+const validator = require("validator");
 const connectDB = require("./config/database");
 const User = require("./models/user");
-const app = express();
+const {validateSignUpData} = require("./helpers/validation")
 
 app.use(express.json());
 
+// Sign up API - POST /signup
 app.post("/signup", async (req, res) => {
 	const body = req.body;
-	
+
 	try {
+		// Validation of data
+		validateSignUpData(req);
+
+		// Encrypt the password
+		const passwordHash = await bcrypt.hash(body.password, 10);
+		body.password = passwordHash;
+
 		const ALLOWED_FIELDS = [
 			"firstName",
 			"lastName",
@@ -34,7 +45,31 @@ app.post("/signup", async (req, res) => {
 		res.send("User created successfully!!");
 	} catch (error) {
 		console.error("Error creating user", error);
-		res.status(400).send("Error creating user: " + error.message);
+		res.status(400).send("Error: " + error.message);
+	}
+});
+
+// Sign in API - POST /signin
+app.post("/signin", async (req, res) => {
+	const body = req.body;
+	try {
+		const isEmailValid = validator.isEmail(body.email);
+		if (!isEmailValid) {
+			throw new Error("Email is not valid");
+		} 
+		const user = await User.findOne({email: body.email});
+		if(!user) {
+			throw new Error("User not found");
+		}
+
+		const isPasswordValisd = await bcrypt.compare(body.password, user.password);
+		if (!isPasswordValisd) {
+			throw new Error("Invalid credentials");
+		}
+		res.send("User signed in successfully!!");
+	} catch (error) {
+		console.error("Error signing in", error);
+		res.status(400).send("Error: " + error.message);		
 	}
 });
 

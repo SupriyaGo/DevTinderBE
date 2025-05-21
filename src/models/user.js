@@ -37,7 +37,6 @@ const userSchema = new Schema({
 		required: true,
 		trim: true,
 		minLength: 2,
-		maxLength: 8,
 		validate(value) {
 			if (!validator.isStrongPassword(value)) {
 				throw new Error(`Not a valid PASSWORD!`);
