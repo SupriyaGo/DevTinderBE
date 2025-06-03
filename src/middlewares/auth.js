@@ -1,34 +1,26 @@
-export const adminAuth = (req, res, next) => {
-    // Logic to check if the request is authorized
-    // const token = req.body?.token;
-    const token = 'admin-token';
-    const isAuthorized = token ===  'admin-token' ;
-    console.log('Authorized request from adminAuth middleware');
-    if(isAuthorized) {
-     next();
-    }  else {
-        res.status(401).send('Unauthorized request');
-    }
-}
-export const userAuth = (req, res, next) => {
-    console.log(req.url);
+const jwt = require('jsonwebtoken');
+const User = require("../models/user");
 
-    // Do not require authentication for user login route
-    const isUserLoginRoute = req.url === '/user/login'; 
-    if(isUserLoginRoute) {
-        console.log('User login route, no auth required');
-        next();
-        return;
+
+const userAuth = async (req, res, next) => {
+    try {
+        const {token} = req.cookies;
+		if(!token) {
+			throw new Error("Invalid token!!");
+		}
+		const decodedToken = jwt.verify(token, 'Dev@Tinder#2025')
+		const {_id} = decodedToken;
+		const user = await User.findById(_id);
+        if (!user) {
+			throw new Error("User not found");
+		} 
+        req.user = user; // Attach user to request object
+	    next()
+    } catch (error) {
+        res.status(400).send("Error: " + error.message);
     }
-    
-    // Logic to check if the request is authorized
-    // const token = req.body?.token;
-    const token = 'admin-token';
-    const isAuthorized = token ===  'admin-token' ;
-    console.log('Authorized request from userAuth middleware');
-    if(isAuthorized) {
-     next();
-    }  else {
-        res.status(401).send('Unauthorized request');
-    }
+   
+	
 }
+
+module.exports = {userAuth};

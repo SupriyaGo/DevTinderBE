@@ -4,11 +4,16 @@ const express = require("express");
 const app = express();
 const bcrypt = require("bcrypt");
 const validator = require("validator");
+const cookireParser = require("cookie-parser");
+const jwt = require('jsonwebtoken');
 const connectDB = require("./config/database");
 const User = require("./models/user");
 const {validateSignUpData} = require("./helpers/validation")
+const {userAuth} = require("./middlewares/auth")
+const PORT = 9000
 
 app.use(express.json());
+app.use(cookireParser());
 
 // Sign up API - POST /signup
 app.post("/signup", async (req, res) => {
@@ -66,10 +71,25 @@ app.post("/signin", async (req, res) => {
 		if (!isPasswordValisd) {
 			throw new Error("Invalid credentials");
 		}
+		// Generate JWT token
+		var token = jwt.sign({ _id: user._id }, 'Dev@Tinder#2025');
+		// Set the token in cookies
+		res.cookie("token", token)
 		res.send("User signed in successfully!!");
 	} catch (error) {
 		console.error("Error signing in", error);
 		res.status(400).send("Error: " + error.message);		
+	}
+});
+
+// Get profile details of the user
+app.get("/profile", userAuth, async (req, res) => {
+	try {
+		const user = req.user; // User is attached to the request object by the middleware
+		res.send(user);
+	} catch (error) {
+		res.status(400).send("Error getting profile: " + error.message);
+		
 	}
 });
 
@@ -199,6 +219,6 @@ app.patch("/userByEmail/:email", async (req, res) => {
 connectDB()
 	.then(() => {
 		console.log("Database connected successfully");
-		app.listen(3000, () => console.log("Server is running on port 3000"));
+		app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 	})
 	.catch((error) => console.log("Database connection failed", error));
