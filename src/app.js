@@ -67,12 +67,12 @@ app.post("/signin", async (req, res) => {
 			throw new Error("User not found");
 		}
 
-		const isPasswordValisd = await bcrypt.compare(body.password, user.password);
+		const isPasswordValisd = await user.verifyPassword(body.password);
 		if (!isPasswordValisd) {
 			throw new Error("Invalid credentials");
 		}
 		// Generate JWT token
-		var token = jwt.sign({ _id: user._id }, 'Dev@Tinder#2025');
+		var token = await user.getJWT();
 		// Set the token in cookies
 		res.cookie("token", token)
 		res.send("User signed in successfully!!");
