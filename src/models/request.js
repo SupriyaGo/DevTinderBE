@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const requestSchema = new Schema({
     senderId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true
     },
     receiverId: {

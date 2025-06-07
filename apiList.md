@@ -12,15 +12,16 @@
 
 ## requestRouter
 - POST /request/send/:status/:userId
-- POST /request/send/ignore/:userId
-- POST /request/send/interested/:receiverId
+-- POST /request/send/ignore/:userId
+-- POST /request/send/interested/:receiverId
 
-- POST /request/review/accepted/requestId
-- POST /request/review/rejected/requestId
+- POST /request/review/:status/:requestId
+-- POST /request/review/accepted/requestId
+-- POST /request/review/rejected/requestId
 
 ## userRouter
+- GET /user/requests
 - GET /user/connections
-- GET /user/requests/received
 - GET /user/feed - gets you the proifles of other users on platform
 
 
