@@ -73,5 +73,15 @@ router.post("/signin", async (req, res) => {
 	}
 });
 
+// Sign out API - POST /signout
+router.post("/signout", async(req, res) => {
+	// Clean up activity
+	// Logout logic
+	res.cookie("token", null, {
+		expires: new Date(Date.now())
+	})
+	res.send("User signed out successfully!!");
+})
+
 
 module.exports = router;

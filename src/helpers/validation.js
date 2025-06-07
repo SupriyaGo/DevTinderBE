@@ -14,4 +14,20 @@ const validateSignUpData = (req) => {
     }
 };
 
-module.exports = { validateSignUpData }
+const validateEditProfileData = (req) => {
+    const body = req.body;
+    const ALLOWED_FIELDS = [
+        "firstName",
+        "lastName",
+        "photo",
+        "skills",
+        "about"
+    ];
+    const isUpdateAllowed = Object.keys(body).every(key => ALLOWED_FIELDS.includes(key));
+    if (!isUpdateAllowed) {
+        throw new Error("Invalid Edit Request");
+    }
+    return isUpdateAllowed;
+}
+
+module.exports = { validateSignUpData, validateEditProfileData }
