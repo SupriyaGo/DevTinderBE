@@ -58,6 +58,10 @@ router.get("/user/feed", userAuth ,async (req, res) => {
 	// 4. already sent the connection request
 	try {
 		const userData = req.user;
+		let limit = parseInt(req.query.limit) || 10;
+		limit = limit > 50 ? 50 : limit; // Limit the maximum number of results to 50
+		const page = parseInt(req.query.page) || 1;
+		const skip = (page - 1) * limit;
 
 		const connections = await Request.find({
 			$or: [
@@ -83,7 +87,7 @@ router.get("/user/feed", userAuth ,async (req, res) => {
 
 		const users = await User.find({
 			_id: { $nin: [userData._id, ...connectionIds, ...ignoredIds] }
-		}).select("firstName lastName age about photo");
+		}).select("firstName lastName age about photo").skip(skip).limit(limit);
 
 		res.json({message: "Feed fetched successfully", data: users});
 	} catch (error) {
